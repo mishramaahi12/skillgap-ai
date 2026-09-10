@@ -1,247 +1,233 @@
 import random
 import pandas as pd
 
+random.seed(42)
+
+# --------------------------------------------------
+# CONFIGURATION
+# --------------------------------------------------
+
+NUM_STUDENTS = 100
+
+SKILLS = [
+    "Debugging",
+    "Problem Decomposition",
+    "Algorithmic Thinking",
+    "Code Quality",
+    "SQL Reasoning",
+]
+
+DIFFICULTY_FACTOR = {
+    "Easy": 0.00,
+    "Medium": 0.10,
+    "Hard": 0.20,
+}
 
 TASKS_PATH = "../data/tasks.csv"
 OUTPUT_PATH = "../data/student_attempts.csv"
 
-random.seed(42)
+
+# --------------------------------------------------
+# LOAD TASK DATA
+# --------------------------------------------------
+
+tasks = pd.read_csv(TASKS_PATH)
 
 
 # --------------------------------------------------
-# STUDENT PROFILES
+# GENERATE STUDENT SKILL PROFILES
 # --------------------------------------------------
 
-STUDENT_PROFILES = {
-    "S001": {
-        "Debugging": 0.45,
-        "Problem Decomposition": 0.75,
-        "Algorithmic Thinking": 0.65,
-        "Code Quality": 0.85,
-        "SQL Reasoning": 0.55,
-    },
-    "S002": {
-        "Debugging": 0.70,
-        "Problem Decomposition": 0.45,
-        "Algorithmic Thinking": 0.60,
-        "Code Quality": 0.65,
-        "SQL Reasoning": 0.80,
-    },
-    "S003": {
-        "Debugging": 0.35,
-        "Problem Decomposition": 0.60,
-        "Algorithmic Thinking": 0.80,
-        "Code Quality": 0.50,
-        "SQL Reasoning": 0.45,
-    },
-    "S004": {
-        "Debugging": 0.80,
-        "Problem Decomposition": 0.70,
-        "Algorithmic Thinking": 0.55,
-        "Code Quality": 0.40,
-        "SQL Reasoning": 0.75,
-    },
-    "S005": {
-        "Debugging": 0.60,
-        "Problem Decomposition": 0.85,
-        "Algorithmic Thinking": 0.90,
-        "Code Quality": 0.80,
-        "SQL Reasoning": 0.65,
-    },
-}
+def generate_student_profiles():
+    profiles = {}
+
+    for i in range(1, NUM_STUDENTS + 1):
+        student_id = f"S{i:03d}"
+
+        profiles[student_id] = {
+            skill: round(
+                random.uniform(0.30, 0.90),
+                2
+            )
+            for skill in SKILLS
+        }
+
+    return profiles
 
 
-def generate_attempt(student_id, task):
+STUDENT_PROFILES = generate_student_profiles()
 
-    skill = task["skill"]
-    difficulty = task["difficulty"]
 
-    skill_level = STUDENT_PROFILES[
-        student_id
-    ][skill]
+# --------------------------------------------------
+# GENERATE BEHAVIOR DATA
+# --------------------------------------------------
 
-    difficulty_factor = {
-        "Easy": 0.00,
-        "Medium": 0.12,
-        "Hard": 0.25,
-    }[difficulty]
+records = []
 
-    performance = max(
-        0.05,
-        min(
-            0.98,
-            skill_level - difficulty_factor
-            + random.uniform(-0.08, 0.08)
+for student_id, profile in STUDENT_PROFILES.items():
+
+    for _, task in tasks.iterrows():
+
+        skill = task["skill"]
+        difficulty = task["difficulty"]
+
+        skill_level = profile[skill]
+        difficulty_factor = DIFFICULTY_FACTOR[difficulty]
+
+        # Ground-truth skill score
+        true_skill_score = round(
+            skill_level * 100,
+            2
         )
-    )
 
-    # Attempts
-    total_attempts = max(
-        1,
-        round(
-            1
-            + (1 - performance) * 5
-            + random.uniform(-0.5, 1)
+        # Performance depends on skill + difficulty
+        performance = (
+            skill_level
+            - difficulty_factor
+            + random.uniform(-0.04, 0.04)
         )
-    )
 
-    # Compilation attempts
-    compile_count = max(
-        1,
-        total_attempts
-        + random.randint(0, 3)
-    )
-
-    # Errors
-    error_count = max(
-        0,
-        round(
-            (1 - performance) * 8
-            + random.uniform(-1, 1)
+        performance = max(
+            0.05,
+            min(0.98, performance)
         )
-    )
 
-    # Repeated errors
-    repeated_error_count = min(
-        error_count,
-        max(
+        # ------------------------------
+        # Behavioral features
+        # ------------------------------
+
+        total_attempts = max(
+            1,
+            round(
+                1
+                + (1 - performance) * 7
+                + random.uniform(-1, 1)
+            )
+        )
+
+        compile_count = max(
+            1,
+            total_attempts
+            + random.randint(0, 2)
+        )
+
+        error_count = max(
+            0,
+            round(
+                (1 - performance) * 10
+                + random.uniform(-1, 1)
+            )
+        )
+
+        repeated_error_count = max(
             0,
             round(
                 error_count
                 * (1 - performance)
+                * 1.2
+                + random.uniform(-0.5, 0.5)
             )
         )
-    )
 
-    # Hints
-    hint_count = max(
-        0,
-        round(
-            (1 - performance) * 4
-            + random.uniform(-0.5, 0.5)
-        )
-    )
-
-    # Time to first attempt
-    time_to_first_attempt = max(
-        5,
-        round(
-            10
-            + (1 - performance) * 70
-            + random.uniform(-8, 8)
-        )
-    )
-
-    # Time to solution
-    time_to_solution = max(
-        30,
-        round(
-            60
-            + (1 - performance) * 700
-            + difficulty_factor * 500
-            + random.uniform(-40, 40)
-        )
-    )
-
-    # Correctness
-    solution_correctness = round(
-        performance,
-        2
-    )
-
-    # Test cases
-    test_cases_passed = max(
-        1,
-        min(
-            10,
+        hint_count = max(
+            0,
             round(
-                performance * 10
+                (1 - performance) * 5
+                + random.uniform(-0.5, 0.5)
+            )
+        )
+
+        time_to_first_attempt = max(
+            5,
+            round(
+                8
+                + (1 - performance) * 85
+                + random.uniform(-5, 5),
+                2
+            )
+        )
+
+        time_to_solution = max(
+            30,
+            round(
+                50
+                + (1 - performance) * 850
+                + difficulty_factor * 400
+                + random.uniform(-30, 30),
+                2
+            )
+        )
+
+        solution_correctness = round(
+            performance,
+            4
+        )
+
+        test_cases_passed = max(
+            0,
+            min(
+                10,
+                round(
+                    performance * 10
+                    + random.uniform(-1, 1)
+                )
+            )
+        )
+
+        code_changes = max(
+            1,
+            round(
+                total_attempts
+                + error_count * 0.8
                 + random.uniform(-1, 1)
             )
         )
-    )
 
-    # Code changes
-    code_changes = max(
-        1,
-        round(
-            total_attempts
-            + error_count
-            + random.uniform(0, 3)
-        )
-    )
-
-    return {
-        "student_id": student_id,
-        "task_id": task["task_id"],
-        "time_to_first_attempt": time_to_first_attempt,
-        "total_attempts": total_attempts,
-        "compile_count": compile_count,
-        "error_count": error_count,
-        "hint_count": hint_count,
-        "repeated_error_count": repeated_error_count,
-        "solution_correctness": solution_correctness,
-        "test_cases_passed": test_cases_passed,
-        "time_to_solution": time_to_solution,
-        "code_changes": code_changes,
-    }
+        records.append({
+            "student_id": student_id,
+            "task_id": task["task_id"],
+            "true_skill_score": true_skill_score,
+            "time_to_first_attempt": time_to_first_attempt,
+            "total_attempts": total_attempts,
+            "compile_count": compile_count,
+            "error_count": error_count,
+            "hint_count": hint_count,
+            "repeated_error_count": repeated_error_count,
+            "solution_correctness": solution_correctness,
+            "test_cases_passed": test_cases_passed,
+            "time_to_solution": time_to_solution,
+            "code_changes": code_changes,
+        })
 
 
-def main():
+# --------------------------------------------------
+# SAVE DATASET
+# --------------------------------------------------
 
-    tasks = pd.read_csv(TASKS_PATH)
+df = pd.DataFrame(records)
 
-    records = []
+df.to_csv(
+    OUTPUT_PATH,
+    index=False
+)
 
-    for student_id in STUDENT_PROFILES:
+print("\n" + "=" * 60)
+print("SKILLGAP AI - SYNTHETIC DATASET GENERATED")
+print("=" * 60)
 
-        for _, task in tasks.iterrows():
+print(f"\nStudents : {df['student_id'].nunique()}")
+print(f"Tasks    : {df['task_id'].nunique()}")
+print(f"Records  : {len(df)}")
 
-            record = generate_attempt(
-                student_id,
-                task
-            )
+print("\nRecords per skill:")
 
-            records.append(record)
+skill_counts = (
+    tasks["skill"]
+    .value_counts()
+)
 
-    df = pd.DataFrame(records)
+print(skill_counts)
 
-    df.to_csv(
-        OUTPUT_PATH,
-        index=False
-    )
+print(f"\nSaved to: {OUTPUT_PATH}")
 
-    print("\n" + "=" * 60)
-    print("SYNTHETIC STUDENT DATA GENERATED")
-    print("=" * 60)
-
-    print(f"\nStudents : {df['student_id'].nunique()}")
-    print(f"Tasks    : {df['task_id'].nunique()}")
-    print(f"Attempts : {len(df)}")
-
-    print("\nRecords per skill:")
-
-    task_skill_map = tasks[
-        ["task_id", "skill"]
-    ]
-
-    merged = df.merge(
-        task_skill_map,
-        on="task_id"
-    )
-
-    print(
-        merged["skill"]
-        .value_counts()
-        .sort_index()
-    )
-
-    print(
-        f"\nSaved to: {OUTPUT_PATH}"
-    )
-
-    print("=" * 60)
-
-
-if __name__ == "__main__":
-    main()
+print("\n" + "=" * 60)

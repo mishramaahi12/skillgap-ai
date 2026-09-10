@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import joblib
 import pandas as pd
 import shap
@@ -11,7 +12,13 @@ from skill_gap import identify_skill_gaps, generate_roadmap
 DATA_PATH = "../data/student_attempts.csv"
 MODEL_DIR = "../models"
 
+
+# ============================================================
+# FEATURES
+# ============================================================
+
 FEATURE_COLUMNS = [
+    # Original behavior features
     "time_to_first_attempt",
     "total_attempts",
     "compile_count",
@@ -22,21 +29,96 @@ FEATURE_COLUMNS = [
     "test_cases_passed",
     "time_to_solution",
     "code_changes",
+
+    # Engineered features
+    "attempt_efficiency",
+    "error_rate",
+    "repeated_error_rate",
+    "hint_dependency",
+    "test_case_rate",
+    "time_efficiency",
+    "code_change_rate",
 ]
 
+
+# ============================================================
+# SKILL → TASK MAPPING
+# ============================================================
+
 SKILL_TASKS = {
-    "Problem Decomposition": ["T004", "T005"],
-    "Debugging": ["T001", "T002", "T003"],
-    "Algorithmic Thinking": ["T006", "T007"],
-    "Code Quality": ["T008"],
-    "SQL Reasoning": ["T009", "T010"],
+    "Problem Decomposition": [
+        "T004", "T005", "T014", "T015", "T016"
+    ],
+    "Debugging": [
+        "T001", "T002", "T003", "T011", "T012", "T013"
+    ],
+    "Algorithmic Thinking": [
+        "T006", "T007", "T017", "T018", "T019"
+    ],
+    "Code Quality": [
+        "T008", "T020", "T021", "T022",
+        "T023", "T024", "T025"
+    ],
+    "SQL Reasoning": [
+        "T009", "T010", "T026", "T027",
+        "T028", "T029", "T030"
+    ],
 }
 
 
+# ============================================================
+# FEATURE DESCRIPTIONS
+# ============================================================
+
+FEATURE_DESCRIPTIONS = {
+    "time_to_first_attempt": "time before the first attempt",
+    "total_attempts": "number of attempts",
+    "compile_count": "compilation attempts",
+    "error_count": "number of errors",
+    "hint_count": "hint usage",
+    "repeated_error_count": "repeated errors",
+    "solution_correctness": "solution correctness",
+    "test_cases_passed": "number of test cases passed",
+    "time_to_solution": "time taken to reach the solution",
+    "code_changes": "number of code changes",
+
+    "attempt_efficiency": "attempt efficiency",
+    "error_rate": "error rate",
+    "repeated_error_rate": "repeated error rate",
+    "hint_dependency": "hint dependency",
+    "test_case_rate": "test case success rate",
+    "time_efficiency": "time efficiency",
+    "code_change_rate": "code change rate",
+}
+
+
+# ============================================================
+# NEGATIVE FEATURES
+# ============================================================
+
+NEGATIVE_FEATURES = {
+    "time_to_first_attempt",
+    "total_attempts",
+    "compile_count",
+    "error_count",
+    "hint_count",
+    "repeated_error_count",
+    "time_to_solution",
+    "code_changes",
+    "error_rate",
+    "repeated_error_rate",
+    "hint_dependency",
+}
+
+
+# ============================================================
+# PREDICT SKILL SCORE
+# ============================================================
+
 def predict_skill_score(student_data, skill):
-    """Predict score using the trained skill model."""
 
     model_name = skill.replace(" ", "_")
+
     model_path = os.path.join(
         MODEL_DIR,
         f"{model_name}.pkl"
@@ -51,28 +133,35 @@ def predict_skill_score(student_data, skill):
 
     predictions = model.predict(X)
 
-    score = predictions.mean()
+    score = float(predictions.mean())
 
-    return round(max(0, min(100, score)), 2)
+    score = max(0, min(100, score))
 
+    return round(score, 2)
+
+
+# ============================================================
+# SHAP EXPLANATION
+# ============================================================
 
 def get_shap_explanation(student_data, skill):
-    """Generate top positive and negative SHAP factors."""
 
     model_name = skill.replace(" ", "_")
+
     model_path = os.path.join(
         MODEL_DIR,
         f"{model_name}.pkl"
     )
 
     if not os.path.exists(model_path):
-        return None
+        return []
 
     model = joblib.load(model_path)
 
     X = student_data[FEATURE_COLUMNS]
 
     explainer = shap.TreeExplainer(model)
+
     shap_values = explainer.shap_values(X)
 
     if isinstance(shap_values, list):
@@ -84,12 +173,21 @@ def get_shap_explanation(student_data, skill):
 
     for index, feature in enumerate(FEATURE_COLUMNS):
 
-        contribution = mean_values[index]
+        contribution = float(mean_values[index])
+
+        if contribution == 0:
+            continue
 
         results.append({
             "feature": feature,
-            "contribution": contribution,
-            "importance": abs(contribution)
+            "description": FEATURE_DESCRIPTIONS[feature],
+            "contribution": round(contribution, 4),
+            "importance": round(abs(contribution), 4),
+            "direction": (
+                "positive"
+                if contribution > 0
+                else "negative"
+            )
         })
 
     results.sort(
@@ -97,15 +195,20 @@ def get_shap_explanation(student_data, skill):
         reverse=True
     )
 
-    return results
+    return results[:5]
 
+
+# ============================================================
+# AI EXPLANATION
+# ============================================================
 
 def generate_ai_explanation(
     skill,
     shap_results,
     student_data
 ):
-    """Convert SHAP results into a student-friendly explanation."""
+
+    skill = skill.strip()
 
     if not shap_results:
         return "Model explanation is not available yet."
@@ -115,53 +218,36 @@ def generate_ai_explanation(
     for item in shap_results[:3]:
 
         feature = item["feature"]
+        description = item["description"]
         contribution = item["contribution"]
 
-        value = student_data[feature].mean()
+        if feature in NEGATIVE_FEATURES:
 
-        if contribution < 0:
-
-            if feature in [
-                "total_attempts",
-                "compile_count",
-                "error_count",
-                "hint_count",
-                "repeated_error_count",
-                "time_to_first_attempt",
-                "time_to_solution",
-                "code_changes",
-            ]:
-
-                explanations.append(
-                    f"higher {feature.replace('_', ' ')} "
-                    f"lowered the predicted {skill} score"
+            if contribution < 0:
+                text = (
+                    f"Higher {description} negatively affected "
+                    f"the predicted {skill} score"
                 )
-
             else:
-
-                explanations.append(
-                    f"lower {feature.replace('_', ' ')} "
-                    f"lowered the predicted {skill} score"
+                text = (
+                    f"Lower {description} positively contributed "
+                    f"to the predicted {skill} score"
                 )
 
         else:
 
-            if feature in [
-                "solution_correctness",
-                "test_cases_passed",
-            ]:
-
-                explanations.append(
-                    f"better {feature.replace('_', ' ')} "
-                    f"helped increase the predicted {skill} score"
+            if contribution > 0:
+                text = (
+                    f"Better {description} positively contributed "
+                    f"to the predicted {skill} score"
                 )
-
             else:
-
-                explanations.append(
-                    f"efficient {feature.replace('_', ' ')} "
-                    f"helped increase the predicted {skill} score"
+                text = (
+                    f"Lower {description} negatively affected "
+                    f"the predicted {skill} score"
                 )
+
+        explanations.append(text)
 
     if not explanations:
         return "No strong behavioral factors were detected."
@@ -169,23 +255,27 @@ def generate_ai_explanation(
     return "; ".join(explanations) + "."
 
 
+# ============================================================
+# COMPLETE AI PIPELINE
+# ============================================================
+
 def run_pipeline(student_id="S001"):
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 1. LOAD DATA
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     df = pd.read_csv(DATA_PATH)
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 2. FEATURE ENGINEERING
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     df = create_features(df)
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 3. SELECT STUDENT
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     student_df = df[
         df["student_id"] == student_id
@@ -193,15 +283,13 @@ def run_pipeline(student_id="S001"):
 
     if student_df.empty:
 
-        print(
-            f"No data found for student: {student_id}"
-        )
+        return {
+            "error": f"No data found for student {student_id}"
+        }
 
-        return
-
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 4. ML SKILL PREDICTIONS
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     skill_scores = {}
     explanations = {}
@@ -244,31 +332,76 @@ def run_pipeline(student_id="S001"):
             skill
         )
 
-        explanations[skill] = generate_ai_explanation(
-            skill,
-            shap_results,
-            skill_data
-        )
+        explanations[skill] = {
+            "summary": generate_ai_explanation(
+                skill,
+                shap_results,
+                skill_data
+            ),
+            "top_factors": shap_results
+        }
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 5. SKILL GAP DETECTION
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     gaps = identify_skill_gaps(
         skill_scores
     )
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # 6. PERSONALIZED ROADMAP
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
     roadmap = generate_roadmap(
         gaps
     )
 
-    # -------------------------------------------------
-    # 7. FINAL REPORT
-    # -------------------------------------------------
+    # --------------------------------------------------------
+    # 7. CREATE JSON-READY RESULT
+    # --------------------------------------------------------
+
+    result = {
+        "student_id": student_id,
+
+        "skill_scores": skill_scores,
+
+        "skill_gaps": gaps.to_dict(
+            orient="records"
+        ),
+
+        "explanations": explanations,
+
+        "roadmap": roadmap.to_dict(
+            orient="records"
+        )
+    }
+
+    return result
+
+
+# ============================================================
+# TERMINAL REPORT
+# ============================================================
+
+def print_report(result):
+
+    if "error" in result:
+
+        print(result["error"])
+
+        return
+
+    student_id = result["student_id"]
+
+    skill_scores = result["skill_scores"]
+
+    skill_gaps = result["skill_gaps"]
+
+    explanations = result["explanations"]
+
+    roadmap = result["roadmap"]
+
 
     print("\n" + "=" * 75)
     print("SKILLGAP AI — COMPLETE AI ANALYSIS")
@@ -276,7 +409,11 @@ def run_pipeline(student_id="S001"):
 
     print(f"\nStudent: {student_id}")
 
-    # Skill scores
+
+    # --------------------------------------------------------
+    # Skill Scores
+    # --------------------------------------------------------
+
     print("\n" + "=" * 75)
     print("1. SKILL SCORES")
     print("=" * 75)
@@ -288,30 +425,39 @@ def run_pipeline(student_id="S001"):
             f"{score:>6.2f}%"
         )
 
-    # Gaps
+
+    # --------------------------------------------------------
+    # Skill Gaps
+    # --------------------------------------------------------
+
     print("\n" + "=" * 75)
     print("2. SKILL GAPS")
     print("=" * 75)
 
-    weak_skills = gaps[
-        gaps["status"] == "Needs Improvement"
+    weak_skills = [
+        gap for gap in skill_gaps
+        if gap["status"] == "Needs Improvement"
     ]
 
-    if weak_skills.empty:
+    if not weak_skills:
 
         print("No major skill gaps detected.")
 
     else:
 
-        for _, row in weak_skills.iterrows():
+        for gap in weak_skills:
 
             print(
-                f"{row['skill']:<25} "
-                f"{row['score']:>6.2f}% "
-                f"Gap: {row['gap']:.2f}%"
+                f"{gap['skill']:<25} "
+                f"{gap['score']:>6.2f}% "
+                f"Gap: {gap['gap']:.2f}%"
             )
 
-    # Explanations
+
+    # --------------------------------------------------------
+    # AI Explanations
+    # --------------------------------------------------------
+
     print("\n" + "=" * 75)
     print("3. AI EXPLANATIONS")
     print("=" * 75)
@@ -319,24 +465,34 @@ def run_pipeline(student_id="S001"):
     for skill, explanation in explanations.items():
 
         print(f"\n{skill}")
-        print(f"→ {explanation}")
 
-    # Roadmap
+        print(
+            f"→ {explanation['summary']}"
+            if isinstance(explanation, dict)
+            else f"→ {explanation}"
+        )
+
+
+    # --------------------------------------------------------
+    # Personalized Roadmap
+    # --------------------------------------------------------
+
     print("\n" + "=" * 75)
     print("4. PERSONALIZED SKILL ROADMAP")
     print("=" * 75)
 
-    if roadmap.empty:
+    if not roadmap:
 
         print("No roadmap required.")
 
     else:
 
-        for _, row in roadmap.iterrows():
+        for row in roadmap:
 
             print(
                 f"\n{row['skill']} "
-                f"— Current Score: {row['current_score']}%"
+                f"— Current Score: "
+                f"{row['current_score']}%"
             )
 
             steps = row[
@@ -352,10 +508,15 @@ def run_pipeline(student_id="S001"):
                     f"  {number}. {step}"
                 )
 
+
     print("\n" + "=" * 75)
     print("COMPLETE AI ANALYSIS FINISHED")
     print("=" * 75)
 
+
+# ============================================================
+# PROGRAM ENTRY
+# ============================================================
 
 if __name__ == "__main__":
 
@@ -365,4 +526,18 @@ if __name__ == "__main__":
         else "S001"
     )
 
-    run_pipeline(student_id)
+    result = run_pipeline(student_id)
+
+    print_report(result)
+
+    # Optional JSON output
+    print("\n" + "=" * 75)
+    print("JSON OUTPUT")
+    print("=" * 75)
+
+    print(
+        json.dumps(
+            result,
+            indent=2
+        )
+    )

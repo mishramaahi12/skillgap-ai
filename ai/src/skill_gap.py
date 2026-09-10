@@ -11,16 +11,25 @@ SKILL_THRESHOLDS = {
 
 
 def identify_skill_gaps(skill_scores):
-    """Identify weak skills from calculated skill scores."""
+    """
+    Identify skills that are below the required threshold.
+    """
 
     gaps = []
 
     for skill, score in skill_scores.items():
 
-        threshold = SKILL_THRESHOLDS.get(skill, 60)
+        threshold = SKILL_THRESHOLDS.get(
+            skill,
+            60
+        )
 
         if score < threshold:
-            gap = round(threshold - score, 2)
+
+            gap = round(
+                threshold - score,
+                2
+            )
 
             gaps.append({
                 "skill": skill,
@@ -30,6 +39,7 @@ def identify_skill_gaps(skill_scores):
             })
 
         else:
+
             gaps.append({
                 "skill": skill,
                 "score": round(score, 2),
@@ -41,29 +51,37 @@ def identify_skill_gaps(skill_scores):
 
 
 def generate_roadmap(skill_gap_df):
-    """Generate a basic learning roadmap for weak skills."""
+    """
+    Generate a personalized learning roadmap
+    for skills that need improvement.
+    """
 
     roadmap = {
+
         "Problem Decomposition": [
             "Practice breaking large problems into smaller steps",
             "Solve multi-step programming problems",
             "Write pseudocode before coding"
         ],
+
         "Debugging": [
             "Practice identifying syntax and logic errors",
             "Analyze error messages before changing code",
             "Solve debugging tasks without immediate hints"
         ],
+
         "Algorithmic Thinking": [
             "Practice searching and sorting problems",
             "Compare multiple approaches to the same problem",
             "Analyze time and space complexity"
         ],
+
         "Code Quality": [
             "Practice refactoring duplicate code",
             "Use meaningful variable and function names",
             "Break large functions into smaller functions"
         ],
+
         "SQL Reasoning": [
             "Practice filtering and aggregation queries",
             "Work with GROUP BY and JOIN operations",
@@ -81,44 +99,17 @@ def generate_roadmap(skill_gap_df):
 
         skill = row["skill"]
 
+        learning_steps = roadmap.get(
+            skill,
+            []
+        )
+
         result.append({
             "skill": skill,
             "current_score": row["score"],
             "learning_plan": " → ".join(
-                roadmap.get(skill, [])
+                learning_steps
             )
         })
 
     return pd.DataFrame(result)
-
-
-if __name__ == "__main__":
-
-    # Example skill scores
-    skill_scores = {
-        "Problem Decomposition": 71,
-        "Debugging": 43,
-        "Algorithmic Thinking": 64,
-        "Code Quality": 82,
-        "SQL Reasoning": 48
-    }
-
-    gaps = identify_skill_gaps(skill_scores)
-
-    print("\nSKILL GAP ANALYSIS")
-    print("=" * 70)
-    print(gaps.to_string(index=False))
-
-    roadmap = generate_roadmap(gaps)
-
-    print("\nPERSONALIZED SKILL ROADMAP")
-    print("=" * 70)
-
-    if len(roadmap) == 0:
-        print("No major skill gaps detected.")
-
-    else:
-        for _, row in roadmap.iterrows():
-
-            print(f"\n{row['skill']} — {row['current_score']}%")
-            print(f"→ {row['learning_plan']}")
