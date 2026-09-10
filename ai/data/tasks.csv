@@ -1,101 +1,31 @@
-task_id,skill,difficulty,language,topic,problem_type,expected_behavior
-T001,Problem Decomposition,Easy,Python,Loops,Multi-step counting problem,Break the problem into input processing counting and output steps
-T002,Problem Decomposition,Easy,Python,Lists,List transformation problem,Identify list traversal transformation and result generation separately
-T003,Problem Decomposition,Easy,Python,Strings,String processing problem,Separate input parsing character processing and final output
-T004,Problem Decomposition,Medium,Python,Dictionaries,Frequency analysis problem,Identify data structure creation counting logic and result extraction
-T005,Problem Decomposition,Medium,Python,Functions,Function design problem,Divide the problem into reusable logical functions
-T006,Problem Decomposition,Medium,Python,File Handling,Data processing problem,Separate file reading processing validation and output stages
-T007,Problem Decomposition,Easy,Python,Conditions,Decision-making problem,Identify conditions and possible cases before coding
-T008,Problem Decomposition,Medium,Python,Nested Loops,Pattern computation problem,Break nested operations into smaller computational steps
-T009,Problem Decomposition,Medium,Python,Lists,Filtering problem,Identify filtering condition traversal and output requirements
-T010,Problem Decomposition,Hard,Python,Recursion,Recursive problem,Identify base case recursive case and result combination
-T011,Problem Decomposition,Hard,Python,Graph,Graph traversal problem,Separate graph representation traversal and visited-state handling
-T012,Problem Decomposition,Medium,Python,Searching,Search problem,Identify search space comparison condition and termination
-T013,Problem Decomposition,Medium,Python,Sorting,Sorting workflow problem,Separate input preparation sorting criteria and output formatting
-T014,Problem Decomposition,Hard,Python,Dynamic Programming,Optimization problem,Identify subproblems states transitions and final result
-T015,Problem Decomposition,Medium,Python,APIs,Data retrieval problem,Separate request handling data extraction validation and presentation
-T016,Problem Decomposition,Easy,Python,Math,Calculation problem,Translate the requirement into smaller mathematical operations
-T017,Problem Decomposition,Medium,Python,Classes,Object-oriented problem,Identify objects attributes methods and interactions
-T018,Problem Decomposition,Hard,Python,Algorithms,Complex problem,Divide the problem into independent logical components
-T019,Problem Decomposition,Medium,Python,Validation,Input validation problem,Separate validation rules processing logic and error handling
-T020,Problem Decomposition,Hard,Python,Data Processing,Pipeline problem,Identify sequential stages required to transform raw input into output
-T021,Debugging,Easy,Python,Syntax,Syntax error,Locate and correct invalid Python syntax
-T022,Debugging,Easy,Python,Variables,Variable error,Identify incorrect variable usage and fix it
-T023,Debugging,Easy,Python,Conditions,Conditional logic,Identify incorrect condition and correct program behavior
-T024,Debugging,Medium,Python,Loops,Loop logic,Trace loop execution and identify incorrect iteration behavior
-T025,Debugging,Medium,Python,Lists,Indexing,Identify incorrect list index usage and prevent indexing errors
-T026,Debugging,Medium,Python,Strings,String logic,Trace string operations and correct unexpected output
-T027,Debugging,Medium,Python,Dictionaries,Key handling,Identify incorrect dictionary access and fix the logic
-T028,Debugging,Easy,Python,Functions,Function error,Trace function input output and identify incorrect return behavior
-T029,Debugging,Medium,Python,Recursion,Base case,Identify missing or incorrect recursive termination condition
-T030,Debugging,Medium,Python,Loops,Infinite loop,Trace loop state and identify why termination fails
-T031,Debugging,Hard,Python,Algorithms,Logic bug,Trace algorithm execution and locate the incorrect logical step
-T032,Debugging,Medium,Python,Exceptions,Exception handling,Identify incorrect exception handling and fix program flow
-T033,Debugging,Hard,Python,Performance,Performance bug,Identify inefficient operation causing unnecessary execution time
-T034,Debugging,Medium,Python,Lists,Mutation bug,Identify unintended list modification and correct data handling
-T035,Debugging,Medium,Python,Functions,Scope,Identify variable scope issue and correct variable access
-T036,Debugging,Hard,Python,Recursion,Recursive logic,Trace recursive calls and identify incorrect state handling
-T037,Debugging,Hard,Python,Data Structures,Data structure bug,Identify incorrect data structure usage and correct implementation
-T038,Debugging,Medium,Python,Input Output,Input bug,Identify incorrect input parsing or output formatting
-T039,Debugging,Hard,Python,Algorithms,Edge cases,Identify missing edge-case handling and fix the implementation
-T040,Debugging,Hard,Python,Multiple Bugs,Complex debugging,Locate multiple interacting bugs and produce a correct solution
-T041,Algorithmic Thinking,Easy,Python,Searching,Linear Search,Implement an appropriate search strategy for a small dataset
-T042,Algorithmic Thinking,Easy,Python,Sorting,Basic Sorting,Choose and implement a suitable sorting approach
-T043,Algorithmic Thinking,Medium,Python,Searching,Binary Search,Recognize sorted search space and apply binary search
-T044,Algorithmic Thinking,Medium,Python,Two Pointers,Array Problem,Recognize when two-pointer traversal reduces unnecessary work
-T045,Algorithmic Thinking,Medium,Python,Sliding Window,Subarray Problem,Identify a sliding-window approach for contiguous data
-T046,Algorithmic Thinking,Medium,Python,Hashing,Lookup Problem,Use hashing to reduce repeated searching
-T047,Algorithmic Thinking,Easy,Python,Greedy,Selection Problem,Recognize when a locally optimal choice solves the task
-T048,Algorithmic Thinking,Medium,Python,Recursion,Recursive Search,Identify recursive structure and termination conditions
-T049,Algorithmic Thinking,Hard,Python,Dynamic Programming,Optimization,Identify overlapping subproblems and reusable states
-T050,Algorithmic Thinking,Medium,Python,Stacks,Expression Problem,Recognize stack-based processing for nested or sequential operations
-T051,Algorithmic Thinking,Medium,Python,Queues,Processing Order,Choose a queue when first-in-first-out processing is required
-T052,Algorithmic Thinking,Hard,Python,Graphs,BFS,Recognize breadth-first traversal requirements
-T053,Algorithmic Thinking,Hard,Python,Graphs,DFS,Recognize depth-first traversal requirements
-T054,Algorithmic Thinking,Hard,Python,Graphs,Shortest Path,Select an appropriate shortest-path strategy
-T055,Algorithmic Thinking,Medium,Python,Intervals,Interval Problem,Recognize sorting and merging strategy for overlapping intervals
-T056,Algorithmic Thinking,Medium,Python,Prefix Sum,Range Query,Use prefix information to avoid repeated calculations
-T057,Algorithmic Thinking,Hard,Python,Backtracking,Constraint Problem,Identify choices constraints and backtracking states
-T058,Algorithmic Thinking,Hard,Python,Dynamic Programming,State Design,Define appropriate state transition and base conditions
-T059,Algorithmic Thinking,Medium,Python,Complexity,Optimization,Compare approaches and select one with better time complexity
-T060,Algorithmic Thinking,Hard,Python,Algorithms,Strategy Selection,Analyze constraints and select an efficient algorithmic approach
-T061,Code Quality,Easy,Python,Naming,Variable Naming,Use descriptive and meaningful variable names
-T062,Code Quality,Easy,Python,Formatting,Code Formatting,Maintain consistent formatting and readable code structure
-T063,Code Quality,Easy,Python,Functions,Function Design,Create functions with clear responsibilities
-T064,Code Quality,Medium,Python,Duplication,Code Duplication,Reduce unnecessary repeated code
-T065,Code Quality,Medium,Python,Comments,Documentation,Use comments only where they improve understanding
-T066,Code Quality,Medium,Python,Error Handling,Error Handling,Handle expected errors clearly and safely
-T067,Code Quality,Medium,Python,Modularity,Modular Design,Separate independent responsibilities into reusable components
-T068,Code Quality,Easy,Python,Readability,Readable Code,Write code that can be understood without unnecessary complexity
-T069,Code Quality,Medium,Python,Complexity,Complex Code,Refactor overly complicated logic into simpler structures
-T070,Code Quality,Medium,Python,Functions,Parameters,Use appropriate function parameters and return values
-T071,Code Quality,Hard,Python,Architecture,Program Structure,Organize code into logical modules and responsibilities
-T072,Code Quality,Medium,Python,Performance,Efficient Code,Avoid unnecessary computations and repeated operations
-T073,Code Quality,Medium,Python,Data Structures,Appropriate Structures,Choose data structures suitable for the task
-T074,Code Quality,Easy,Python,Input Validation,Validation,Validate input without mixing validation and core logic
-T075,Code Quality,Medium,Python,Testing,Testability,Write code that can be independently tested
-T076,Code Quality,Hard,Python,Refactoring,Refactoring,Improve structure without changing expected behavior
-T077,Code Quality,Medium,Python,Security,Safe Input,Handle external input safely and predictably
-T078,Code Quality,Hard,Python,Maintainability,Maintainable Code,Make code easier to modify and extend
-T079,Code Quality,Medium,Python,Abstraction,Abstraction,Use appropriate abstraction without unnecessary complexity
-T080,Code Quality,Hard,Python,Best Practices,Code Review,Identify quality issues and propose maintainable improvements
-T081,SQL Reasoning,Easy,SQL,SELECT,Basic Query,Retrieve required columns from a table
-T082,SQL Reasoning,Easy,SQL,WHERE,Filtering,Apply correct conditions to filter records
-T083,SQL Reasoning,Easy,SQL,ORDER BY,Sorting,Sort query results according to requirements
-T084,SQL Reasoning,Easy,SQL,GROUP BY,Aggregation,Group records correctly before aggregation
-T085,SQL Reasoning,Easy,SQL,COUNT,Counting,Calculate record counts using appropriate aggregation
-T086,SQL Reasoning,Medium,SQL,SUM,Aggregation,Calculate totals for grouped business data
-T087,SQL Reasoning,Medium,SQL,AVG,Aggregation,Calculate averages while applying correct filters
-T088,SQL Reasoning,Medium,SQL,HAVING,Group Filtering,Filter aggregated groups using HAVING
-T089,SQL Reasoning,Medium,SQL,INNER JOIN,Joins,Combine related tables using correct join conditions
-T090,SQL Reasoning,Medium,SQL,LEFT JOIN,Joins,Preserve unmatched records using a left join
-T091,SQL Reasoning,Medium,SQL,Multiple JOINs,Joins,Combine multiple related tables correctly
-T092,SQL Reasoning,Hard,SQL,Subqueries,Subquery,Use a subquery to answer a dependent query requirement
-T093,SQL Reasoning,Hard,SQL,CTE,CTE,Structure a complex query using a common table expression
-T094,SQL Reasoning,Hard,SQL,Window Functions,Ranking,Use window functions for row-level analytical calculations
-T095,SQL Reasoning,Medium,SQL,CASE,Conditional Logic,Use CASE expressions to classify records
-T096,SQL Reasoning,Hard,SQL,Date Functions,Time Analysis,Analyze records using appropriate date operations
-T097,SQL Reasoning,Hard,SQL,Performance,Query Optimization,Identify inefficient query patterns and improve them
-T098,SQL Reasoning,Hard,SQL,Multiple Tables,Data Analysis,Combine filtering joins and aggregation to answer a business question
-T099,SQL Reasoning,Hard,SQL,Advanced Aggregation,Analytics,Construct a multi-step analytical query from a business requirement
-T100,SQL Reasoning,Hard,SQL,Complex Queries,Problem Solving,Translate a complex analytical requirement into an efficient SQL query
+task_id,skill,difficulty,task_type,title,description,expected_behavior
+T001,Debugging,Easy,Syntax Bug,Fix Python Syntax Error,Fix a Python program containing a syntax error,Identify the exact syntax issue and make the minimum required change
+T002,Debugging,Medium,Logic Bug,Fix Incorrect Total,Debug a program that calculates an incorrect total,Trace the logic and identify where the calculation becomes incorrect
+T003,Debugging,Hard,Runtime Bug,Fix Index Error,Fix a program that crashes because of invalid list indexing,Identify the failing condition and handle the boundary correctly
+T004,Problem Decomposition,Easy,Single Step,Calculate Average,Write a program to calculate the average of numbers,Break the task into input calculation and output steps
+T005,Problem Decomposition,Medium,Multi Step,Student Result System,Create a program that calculates marks total percentage and grade,Separate input validation calculation grading and output into logical steps
+T006,Algorithmic Thinking,Easy,Searching,Find Maximum,Find the largest value in a list,Choose an appropriate traversal strategy and compare values systematically
+T007,Algorithmic Thinking,Medium,Sorting,Sort Student Marks,Sort a list of student marks in ascending order,Select and implement a suitable sorting approach
+T008,Code Quality,Medium,Refactoring,Improve Duplicate Code,Refactor a program containing repeated code,Reduce duplication and improve readability without changing behavior
+T009,SQL Reasoning,Easy,Filtering,Filter Students,Write an SQL query to find students with marks above 80,Identify the correct table column and filtering condition
+T010,SQL Reasoning,Medium,Aggregation,Department Average,Write an SQL query to calculate average marks for each department,Use grouping and aggregation correctly
+T011,Debugging,Easy,Type Error,Fix Type Mismatch,Fix a program that performs an invalid operation between different data types,Identify the incompatible types and correct the operation
+T012,Debugging,Medium,Logic Bug,Fix Incorrect Maximum,Debug a program that returns the wrong maximum value,Trace variable updates and correct the comparison logic
+T013,Debugging,Hard,Runtime Bug,Fix Missing Key Error,Fix a program that crashes when accessing a missing dictionary key,Identify the unsafe access and handle missing values correctly
+T014,Problem Decomposition,Easy,Input Processing,Student Data Input,Create a program that accepts and processes student information,Separate input collection validation processing and output
+T015,Problem Decomposition,Medium,Multi Step,Expense Calculator,Build a program that calculates total expenses and remaining budget,Break the problem into data collection calculation validation and reporting
+T016,Problem Decomposition,Hard,Multi Step,Inventory Management,Create a small inventory management program,Divide inventory operations into clear independent steps
+T017,Algorithmic Thinking,Easy,Counting,Count Frequencies,Count how many times each value occurs in a list,Select an efficient counting strategy and track frequencies systematically
+T018,Algorithmic Thinking,Medium,Searching,Binary Search,Implement binary search on a sorted list,Recognize the sorted structure and repeatedly reduce the search space
+T019,Algorithmic Thinking,Hard,Optimization,Optimize Nested Loops,Improve a program containing inefficient nested loops,Analyze complexity and replace unnecessary repeated operations
+T020,Code Quality,Easy,Naming,Improve Variable Names,Improve unclear variable and function names,Use meaningful names that clearly communicate purpose
+T021,Code Quality,Medium,Refactoring,Split Large Function,Refactor a long function into smaller functions,Separate responsibilities while preserving the original behavior
+T022,Code Quality,Medium,Duplicate Code,Remove Repetition,Refactor repeated logic across multiple functions,Create reusable logic without changing program output
+T023,Code Quality,Hard,Error Handling,Improve Error Handling,Improve a program that handles invalid input poorly,Add clear and appropriate error handling
+T024,Code Quality,Hard,Modularity,Improve Program Structure,Reorganize a poorly structured program,Separate responsibilities into logical modules and functions
+T025,Code Quality,Medium,Complexity,Reduce Code Complexity,Simplify overly complicated conditional logic,Improve readability and reduce unnecessary complexity
+T026,SQL Reasoning,Easy,Sorting,Sort Students,Write an SQL query to sort students by marks,Use ORDER BY correctly with the appropriate column
+T027,SQL Reasoning,Medium,Join,Student Department Join,Combine student and department information using SQL,Identify the correct join key and join type
+T028,SQL Reasoning,Medium,Aggregation,Highest Department Average,Find the department with the highest average marks,Combine GROUP BY aggregation and ordering correctly
+T029,SQL Reasoning,Hard,Subquery,Above Average Students,Find students whose marks are above the overall average,Use a subquery or equivalent reasoning to compare individual values with an aggregate
+T030,SQL Reasoning,Hard,Multi Table Analysis,Department Performance Report,Create an SQL report comparing departments using multiple metrics,Combine joins filtering grouping aggregation and ordering appropriately
